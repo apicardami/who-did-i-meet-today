@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces Variable", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-canal: var(--canal);
+  --color-canal-ink: var(--canal-ink);
+  --color-mola: var(--mola);
+  --color-wash: var(--wash);
+  --color-danger: var(--danger);
+}
+
+:root {
+  /* Light — cream ledger paper, canal-green ink, mola-red stamps. Contrast vs --paper:
+     ink 13.9:1, muted 5.3:1, canal 7.2:1, mola 4.9:1, danger 6.0:1 */
+  --paper: #f6f0e4;
+  --card: #fffbf3;
+  --ink: #1e2a2b;
+  --muted: #5a6662;
+  --line: #ddd2bd;
+  --canal: #0f5c4d;
+  --canal-ink: #fffbf3;
+  --mola: #b23a26;
+  --wash: #ece3d1;
+  --danger: #a12a1c;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark — night canal. Contrast vs --paper: ink 14.1:1, muted 6.6:1, canal 8.3:1, mola 6.4:1 */
+    --paper: #111816;
+    --card: #18211e;
+    --ink: #ede6d6;
+    --muted: #9eaba5;
+    --line: #2c3834;
+    --canal: #63caa9;
+    --canal-ink: #0c1311;
+    --mola: #f08a72;
+    --wash: #1e2925;
+    --danger: #ff9b8a;
+    color-scheme: dark;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* faint ruled-ledger lines */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    color-mix(in srgb, var(--line) 35%, transparent) 31px,
+    color-mix(in srgb, var(--line) 35%, transparent) 32px
+  );
+}
+
+:focus-visible {
+  outline: 3px solid var(--mola);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ticket stub: perforated left edge */
+.stub {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.stub::before {
+  content: "";
+  position: absolute;
+  left: 76px;
+  top: 10px;
+  bottom: 10px;
+  border-left: 2px dashed var(--line);
+}
+
+@media (max-width: 639px) {
+  .stub-form::before {
+    display: none;
+  }
+}
+
+.stamp {
+  border: 2px solid var(--mola);
+  color: var(--mola);
+  border-radius: 9999px;
+  transform: rotate(-8deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in {
+    animation: fade-in 240ms ease-out both;
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+coverage/
+.env
+.env*.local
+forge-secrets.env
+.vercel/
+*.log
+*.tsbuildinfo
+next-env.d.ts
+.mcp.json
