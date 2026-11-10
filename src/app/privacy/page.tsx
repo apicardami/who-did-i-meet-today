@@ -47,14 +47,29 @@ export default function PrivacyPage() {
           ),
         },
         {
+          heading: "Name search",
+          body: (
+            <p>
+              When you search by name, the name you typed (and any extra detail you add, such as a company or city) is sent to Anthropic&apos;s Claude API,
+              which runs a web search limited to linkedin.com and instagram.com and returns public profile links and titles. Nothing from your saved
+              register is sent. Anthropic&apos;s handling of API data is governed by its own published privacy and data usage policies.
+            </p>
+          ),
+        },
+        {
           heading: "How your information is used",
-          body: <p>Your data is used solely to provide {APP_NAME}&apos;s functionality to you. {APP_NAME} does not use any AI provider.</p>,
+          body: (
+            <p>
+              Your data is used solely to provide {APP_NAME}&apos;s functionality to you. The only AI provider used is Anthropic (Claude), and only for
+              name search as described above.
+            </p>
+          ),
         },
         {
           heading: "Third parties we share data with",
           body: (
             <p>
-              Vercel (hosting) and Supabase (database). These are infrastructure subprocessors — they process data on our behalf to run the app, not on
+              Vercel (hosting), Supabase (database) and Anthropic (name search). These are infrastructure subprocessors — they process data on our behalf to run the app, not on
               their own account. We do not sell, rent, or license your data to any party. We do not use your data for advertising, marketing, or profiling.
               We do not use your data to train any machine learning model.
             </p>

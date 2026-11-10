@@ -17,8 +17,8 @@ export const NAV = {
 export const HOME_COPY = {
   eyebrow: "The guest register",
   title: "Who did I meet today?",
-  inputLabel: "Paste a LinkedIn, Instagram or WhatsApp link — or just type a name",
-  inputPlaceholder: "linkedin.com/in/…, @handle, +507 6…, or a name",
+  inputLabel: "Type their full name to search LinkedIn and Instagram — or paste a link or WhatsApp number",
+  inputPlaceholder: "Full name, linkedin.com/in/…, @handle or +507 6…",
   lookup: "Look them up",
   lookingUp: "Looking…",
   orPhoto: "Start with a photo instead",
@@ -42,6 +42,21 @@ export const ENRICH_COPY = {
   name: "Add anything you remember — a link or photo can come later.",
   nothing: "That page didn't share anything readable. Fill in what you know.",
   error: "Couldn't look that up right now. You can still save them by hand.",
+};
+
+export const SEARCH_COPY = {
+  searching: "Searching LinkedIn and Instagram…",
+  heading: "Is it one of these?",
+  sub: "Tap the right profile to fill in their details.",
+  none: "None of these — continue with just the name",
+  empty: "No LinkedIn or Instagram profiles turned up for that name.",
+  notConfigured: "Name search isn't switched on yet. Continue with just the name, or paste their link instead.",
+  error: "Search didn't work this time. Try again, or continue with just the name.",
+  hintLabel: "Narrow it down (optional)",
+  hintPlaceholder: "e.g. Copa Airlines, Panama City",
+  again: "Search again",
+  linkedin: "LinkedIn",
+  instagram: "Instagram",
 };
 
 export const FORM_COPY = {

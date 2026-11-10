@@ -14,6 +14,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource/work-sans": "^5.3.0",
     "iron-session": "^9.0.1",

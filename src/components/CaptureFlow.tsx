@@ -6,10 +6,13 @@ import ContactFields, { draftToPayload, emptyDraft, type ContactDraft } from "./
 import Field from "./Field";
 import PhotoPicker from "./PhotoPicker";
 import { ENRICH_COPY, FORM_COPY, HOME_COPY } from "@/lib/constants";
+import { classifyInput } from "@/lib/links";
+import type { ProfileCandidate } from "@/lib/candidates";
+import ProfilePicker, { type SearchState } from "./ProfilePicker";
 import { localIsoDate, friendlyDate } from "@/lib/dates";
 import type { EnrichResult } from "@/lib/types";
 
-type Phase = "input" | "looking" | "review" | "saving";
+type Phase = "input" | "looking" | "choose" | "review" | "saving";
 
 export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
   const router = useRouter();
@@ -22,6 +25,8 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
   const [metOn, setMetOn] = useState(localIsoDate());
   const [context, setContext] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState<SearchState>({ status: "idle" });
+  const [searchedName, setSearchedName] = useState("");
 
   const set = <K extends keyof ContactDraft>(key: K, value: ContactDraft[K]) => setDraft((d) => ({ ...d, [key]: value }));
 
@@ -35,6 +40,8 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
     setMetOn(localIsoDate());
     setContext("");
     setError(null);
+    setSearch({ status: "idle" });
+    setSearchedName("");
   };
 
   const startBlank = () => {
@@ -44,16 +51,15 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
     setPhase("review");
   };
 
-  const lookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  /** Runs link-preview enrichment and moves to the review card. `known` (from a picked search result) wins for name. */
+  const enrichAndReview = async (input: string, known?: { name: string; headline?: string | null }) => {
     setPhase("looking");
     setError(null);
     try {
       const res = await fetch("/api/enrich", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: query }),
+        body: JSON.stringify({ input }),
       });
       if (res.status === 401) {
         router.replace("/login");
@@ -65,8 +71,8 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
       setNotice(r.message);
       setDraft({
         ...emptyDraft,
-        name: r.name ?? "",
-        headline: r.headline ?? "",
+        name: known?.name || r.name || "",
+        headline: r.headline ?? known?.headline ?? "",
         company: r.company ?? "",
         location: r.location ?? "",
         linkedin_url: r.linkedin_url ?? "",
@@ -78,9 +84,54 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
       setPhoto(r.photo_data_url);
     } catch {
       setNotice(ENRICH_COPY.error);
-      setDraft({ ...emptyDraft, name: /^https?:|\//.test(query) ? "" : query.trim() });
+      setDraft({ ...emptyDraft, name: known?.name ?? (/^https?:|\//.test(input) ? "" : input.trim()), headline: known?.headline ?? "" });
     }
     setPhase("review");
+  };
+
+  const runSearch = async (name: string, hint: string | null) => {
+    setSearch({ status: "loading" });
+    try {
+      const res = await fetch("/api/search-profiles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, hint }),
+      });
+      if (res.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      if (res.status === 503) {
+        setSearch({ status: "not_configured" });
+        return;
+      }
+      if (!res.ok) throw new Error("search failed");
+      const data = (await res.json()) as { candidates: ProfileCandidate[] };
+      setSearch({ status: "ready", candidates: data.candidates });
+    } catch {
+      setSearch({ status: "error" });
+    }
+  };
+
+  const lookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const input = query.trim();
+    if (!input) return;
+    if (classifyInput(input).kind === "name") {
+      setSearchedName(input);
+      setPhase("choose");
+      await runSearch(input, null);
+      return;
+    }
+    await enrichAndReview(input);
+  };
+
+  const pickCandidate = (c: ProfileCandidate) => {
+    void enrichAndReview(c.url, { name: c.name ?? searchedName, headline: c.headline });
+  };
+
+  const continueWithName = () => {
+    void enrichAndReview(searchedName, { name: searchedName });
   };
 
   const addToExisting = async (contactId: string) => {
@@ -127,6 +178,19 @@ export default function CaptureFlow({ onSaved }: { onSaved: () => void }) {
       setPhase("review");
     }
   };
+
+  if (phase === "choose") {
+    return (
+      <ProfilePicker
+        name={searchedName}
+        state={search}
+        onPick={pickCandidate}
+        onNone={continueWithName}
+        onSearchAgain={(hint) => void runSearch(searchedName, hint)}
+        onCancel={reset}
+      />
+    );
+  }
 
   if (phase === "input" || phase === "looking") {
     return (
