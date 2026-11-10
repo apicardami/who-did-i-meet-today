@@ -1,0 +1,13 @@
+# Changelog
+
+## v0.1.1 — 2026-11-10
+### Improved
+- CI actions bumped to `actions/checkout@v7` and `actions/setup-node@v7`; ESLint 10.
+- Dependabot ignores TypeScript and `@types/node` major versions (TypeScript 7 fails the build; runtime is Node 22).
+
+## v0.1.0 — 2026-11-10
+### Added
+- Capture flow: one box for a name, LinkedIn URL, Instagram @handle/URL, WhatsApp number/wa.me link, email or any URL; public link-preview enrichment (SSRF-guarded); duplicate detection with "add today's meeting to <person>".
+- "Met today" + dated timeline, searchable People list, person page with one-tap links, meeting history, edit, hard delete (incl. photo).
+- On-device photo resize (≤480px JPEG) stored in `wdimt_contact_photos`.
+- Shared-password login (iron-session), RLS app-key database access, `/api/health`, `/privacy`, `/terms`, paused-mode banner + interest route, BetoLabs footer.
