@@ -15,6 +15,9 @@ Built by Beto Forge (RUN-20261110-001).
   every data route.
 - Photos are resized on-device to ≤480px JPEG and stored in `contact_photos` (deleted with the person).
 
+## Name search
+`/api/search-profiles` uses Claude's server-side web search (`web_search_20260209`, `allowed_domains: linkedin.com, instagram.com`) to find profile candidates for a full name, then the picked profile goes through the normal enrichment. Env: `ANTHROPIC_API_KEY` (required for search), `ANTHROPIC_MODEL` (default `claude-opus-5-5`), `SEARCH_REGION_HINT` (default `Panama`).
+
 ## Enrichment, honestly
 `/api/enrich` fetches the pasted page once (SSRF-guarded: public IPs only, 3 redirects max, 1MB cap,
 7s timeout) and reads its Open Graph tags. LinkedIn and Instagram usually refuse anonymous

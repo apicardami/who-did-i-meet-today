@@ -46,11 +46,11 @@ export default function TermsPage() {
           ),
         },
         {
-          heading: "Link previews",
+          heading: "Link previews and name search",
           body: (
             <p>
-              Details pulled from a public link preview may be incomplete, outdated or wrong. Review them before saving. {APP_NAME} does not use generative
-              AI.
+              Details pulled from a public link preview, and profiles suggested by name search (powered by Anthropic&apos;s Claude), may be incomplete,
+              outdated, or belong to a different person with the same name. Check before saving.
             </p>
           ),
         },

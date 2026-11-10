@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 — 2026-11-10
+### Added
+- Name search: type a full name and the app searches LinkedIn and Instagram (Claude web search, limited to linkedin.com and instagram.com) and shows "Is it one of these?". Tapping a profile pre-fills the card; "Narrow it down" adds a company or city; "None of these" continues with just the name.
+- Privacy and terms updated: names typed into search are sent to Anthropic.
+- Needs `ANTHROPIC_API_KEY` on Vercel; optional `ANTHROPIC_MODEL` (default `claude-opus-5-5`) and `SEARCH_REGION_HINT` (default `Panama`). Without the key, search says it isn't switched on and the rest of the app works as before.
+
 ## v0.1.1 — 2026-11-10
 ### Improved
 - CI actions bumped to `actions/checkout@v7` and `actions/setup-node@v7`; ESLint 10.
