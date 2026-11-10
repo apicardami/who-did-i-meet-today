@@ -8,6 +8,13 @@ updates:
     groups:
       next:
         patterns: ["next", "eslint-config-next"]
+    ignore:
+      # @types/node tracks the runtime (Vercel Node 22), not the newest Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 (native compiler) fails this build; revisit deliberately, not via Dependabot.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
