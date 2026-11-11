@@ -1,6 +1,6 @@
 # How it works — Who Did I Meet Today?
 
-Last updated: 2026-11-10
+Last updated: 2026-11-11
 
 ## For the person using it
 1. Open https://who-did-i-meet-today.vercel.app and sign in with the shared password (stays signed in 90 days). On a phone, Share → Add to Home Screen.
@@ -24,4 +24,5 @@ What lookups can fill in: LinkedIn usually shares name, headline and photo. Inst
 - Change the password: Vercel → Settings → Environment Variables → `APP_PASSWORD`, then redeploy.
 - Rotate the database key: set a new `APP_DB_KEY` in Vercel and update the SHA-256 in `wdimt_private.app_secret`, then redeploy.
 - Pause: set `APP_PAUSED=true` and redeploy (see the forge's PAUSED_MODE_TEMPLATE.md).
-- Deploys: the Vercel project is not yet connected to Git, so pushes don't auto-deploy. Connect it in Vercel → Settings → Git, or deploy from the forge session.
+- Deploys: the Vercel project is connected to Git (verified 2026-11-11). A push to `master` deploys production; every PR gets a preview build (previews need a Vercel login to view).
+- Forge Gallery: every page load sends one anonymous visit beacon (a per-tab random ID and the app's slug, nothing else) to the forge's gallery. The login page says visitors can't sign in.
