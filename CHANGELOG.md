@@ -3,6 +3,10 @@
 ## v0.2.1 — 2026-11-11
 ### Added
 - Forge Gallery visit beacon (session-scoped, no personal data) and a one-line private-tool notice on the login page.
+### Fixed
+- `package.json` version now matches the changelog (was 0.1.0).
+- HOW_IT_WORKS no longer says the project isn't connected to Git.
+- Name search is switched on (`ANTHROPIC_API_KEY` set on Vercel) and verified live.
 
 ## v0.2.0 — 2026-11-10
 ### Added
