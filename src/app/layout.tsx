@@ -6,7 +6,8 @@ import "@fontsource/work-sans/600.css";
 import "./globals.css";
 import PausedBanner from "@/components/PausedBanner";
 import Footer from "@/components/Footer";
-import { APP_NAME, APP_ONE_LINE } from "@/lib/constants";
+import TrackPageView from "@/components/TrackPageView";
+import { APP_NAME, APP_ONE_LINE, GALLERY_SLUG } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PausedBanner />
         <div className="flex-1">{children}</div>
         <Footer />
+        <TrackPageView slug={GALLERY_SLUG} />
       </body>
     </html>
   );

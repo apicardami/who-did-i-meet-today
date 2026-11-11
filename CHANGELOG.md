@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1 — 2026-11-11
+### Added
+- Forge Gallery visit beacon (session-scoped, no personal data) and a one-line private-tool notice on the login page.
+
 ## v0.2.0 — 2026-11-10
 ### Added
 - Name search: type a full name and the app searches LinkedIn and Instagram (Claude web search, limited to linkedin.com and instagram.com) and shows "Is it one of these?". Tapping a profile pre-fills the card; "Narrow it down" adds a company or city; "None of these" continues with just the name.
