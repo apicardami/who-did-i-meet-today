@@ -22,11 +22,18 @@ Built by Beto Forge (RUN-20261110-001).
 `/api/enrich` fetches the pasted page once (SSRF-guarded: public IPs only, 3 redirects max, 1MB cap,
 7s timeout) and reads its Open Graph tags. LinkedIn and Instagram usually refuse anonymous
 requests, so for those the app falls back to what's in the link itself (name from the LinkedIn slug,
-the Instagram handle) plus manual entry and a photo. No scraping behind logins, no AI.
+the Instagram handle) plus manual entry and a photo. No scraping behind logins. The only AI is the name search above.
 
 ## Env
 See `.env.example`. Required: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `APP_DB_KEY`,
-`APP_PASSWORD`, `SESSION_SECRET`. Optional: `RESEND_API_KEY`, `ADMIN_EMAIL`, `APP_PAUSED`.
+`APP_PASSWORD`, `SESSION_SECRET`. Optional: `ANTHROPIC_API_KEY` (name search; `ANTHROPIC_MODEL` and
+`SEARCH_REGION_HINT` tune it), `RESEND_API_KEY` + `ADMIN_EMAIL` (paused-mode signup email), `APP_PAUSED`.
+All are set on Vercel for Production, Preview and Development (an env change needs a redeploy).
+
+## Ops
+Vercel is git-linked: a push to `master` deploys production and every PR gets a preview (previews need a
+Vercel login). An UptimeRobot keyword monitor watches `/api/health` for `"db":"connected"`. The app is
+listed in Forge Gallery as a private app and sends one anonymous visit beacon per page load.
 
 ## Dev
 ```
