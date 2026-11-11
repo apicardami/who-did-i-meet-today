@@ -6,6 +6,7 @@
 ### Fixed
 - `package.json` version now matches the changelog (was 0.1.0).
 - HOW_IT_WORKS no longer says the project isn't connected to Git.
+- README: env list now covers the Anthropic and Resend variables, no longer says "no AI", and has an Ops section (Git deploys, uptime monitor, gallery).
 - Name search is switched on (`ANTHROPIC_API_KEY` set on Vercel) and verified live.
 
 ## v0.2.0 — 2026-11-10
