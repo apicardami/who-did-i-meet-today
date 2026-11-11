@@ -135,7 +135,11 @@ export const LOGIN_COPY = {
   submitting: "Opening…",
   wrong: "That password didn't work.",
   error: "Couldn't sign in right now. Try again in a moment.",
+  privateNotice: "This is a private tool for a small circle. Visitors can't sign in.",
 };
+
+export const GALLERY_SLUG = "who-did-i-meet-today";
+export const GALLERY_TRACK_URL = "https://forge-gallery.vercel.app/api/track";
 
 export const PAUSED_BANNER_MESSAGE =
   "Who Did I Meet Today? is temporarily paused to save on hosting costs. Some features may show errors right now.";

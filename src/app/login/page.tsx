@@ -62,6 +62,7 @@ export default function LoginPage() {
             {busy ? LOGIN_COPY.submitting : LOGIN_COPY.submit}
           </button>
         </form>
+        <p className="mt-4 text-xs text-muted">{LOGIN_COPY.privateNotice}</p>
       </div>
     </main>
   );
