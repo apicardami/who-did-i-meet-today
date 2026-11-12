@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0 — 2026-11-11
+### Added
+- Edit meeting entries (date, where/how, notes) from the person page (`PATCH /api/meetings/[id]`).
+- Name search prefers people tied to Luis / Alberto Picardami: prompt hint plus a stable re-rank (network names weigh 3x region). Tune with `SEARCH_NETWORK_HINT` (default `Luis Picardami, Alberto Picardami`).
+- Profile photos: **Get photo from profile** button (one attempt at the contact's own public link preview, placeholders and tiny images rejected, never overwrites without confirmation, one automatic attempt when a link is added to a contact with no photo) and **From a screenshot** in the photo picker (file or paste; browser face detector first, else Claude vision locates the face; square crop with preview; the screenshot is never stored).
+- Privacy page describes the screenshot step.
+### Known limits
+- LinkedIn answers automated requests for person pages with HTTP 999 (measured 5 of 5 existing contacts, 2026-11-11), so the auto-fetch gets nothing for LinkedIn people. The screenshot flow is the way in for them. Instagram was not tested.
+- Decided not to pursue automated LinkedIn photo capture: no crawler-UA spoofing, scraping vendors, or server-side headless browser (against LinkedIn's terms and blocked anyway). A Chrome extension sending the photo from a page you are viewing was considered and parked.
+
 ## v0.2.1 — 2026-11-11
 ### Added
 - Forge Gallery visit beacon (session-scoped, no personal data) and a one-line private-tool notice on the login page.
