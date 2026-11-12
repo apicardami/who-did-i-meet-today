@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createContactBody } from "@/lib/validation";
+import { createContactBody, updateMeetingBody } from "@/lib/validation";
 import { stampParts, friendlyDate } from "@/lib/dates";
 
 describe("createContactBody", () => {
@@ -28,5 +28,12 @@ describe("dates", () => {
     expect(stampParts("2026-11-03")).toEqual({ day: "3", month: "NOV", year: "2026" });
     expect(friendlyDate("2026-11-10", "2026-11-10")).toBe("Today");
     expect(friendlyDate("2026-11-09", "2026-11-10")).toBe("Yesterday");
+  });
+});
+
+describe("updateMeetingBody", () => {
+  it("requires a valid date and nulls blank optionals", () => {
+    expect(updateMeetingBody.parse({ met_on: "2026-11-10", context: "  ", notes: "Hi" })).toEqual({ met_on: "2026-11-10", context: null, notes: "Hi" });
+    expect(updateMeetingBody.safeParse({ met_on: "11/10/2026" }).success).toBe(false);
   });
 });

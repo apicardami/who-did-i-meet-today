@@ -72,6 +72,8 @@ export const meetingFields = z.object({
   notes: optText(4000),
 });
 
+export const updateMeetingBody = meetingFields;
+
 export const createContactBody = z.object({
   contact: contactFields,
   photo_data_url: photoField,

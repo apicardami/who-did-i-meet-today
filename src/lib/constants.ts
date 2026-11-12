@@ -116,6 +116,8 @@ export const DETAIL_COPY = {
   cancelEdit: "Cancel",
   delete: "Delete person",
   deleteConfirm: "Delete this person and every meeting with them? This can't be undone.",
+  editMeeting: "Edit",
+  saveMeeting: "Save",
   deleteMeeting: "Remove",
   deleteMeetingConfirm: "Remove this meeting?",
   notFound: "That person isn't in your register.",

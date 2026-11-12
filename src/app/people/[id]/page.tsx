@@ -47,6 +47,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [metOn, setMetOn] = useState(localIsoDate());
   const [context, setContext] = useState("");
   const [meetNotes, setMeetNotes] = useState("");
+  const [editingMeeting, setEditingMeeting] = useState<string | null>(null);
+  const [mDraft, setMDraft] = useState({ met_on: "", context: "", notes: "" });
 
   const call = async (fn: () => Promise<Response>, after: () => void) => {
     setBusy(true);
@@ -138,6 +140,28 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const removeMeeting = (meetingId: string) => {
     if (!window.confirm(DETAIL_COPY.deleteMeetingConfirm)) return;
     void call(() => fetch(`/api/meetings/${meetingId}`, { method: "DELETE" }), reload);
+  };
+
+  const startEditMeeting = (m: ContactDetail["meetings"][number]) => {
+    setMDraft({ met_on: m.met_on, context: m.context ?? "", notes: m.notes ?? "" });
+    setEditingMeeting(m.id);
+  };
+
+  const saveMeeting = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMeeting) return;
+    void call(
+      () =>
+        fetch(`/api/meetings/${editingMeeting}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(mDraft),
+        }),
+      () => {
+        setEditingMeeting(null);
+        reload();
+      },
+    );
   };
 
   const links: { href: string; label: string }[] = [];
@@ -244,21 +268,46 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
             <Empty message={DETAIL_COPY.noHistory} />
           ) : (
             <ul className="flex flex-col gap-3">
-              {c.meetings.map((m) => (
-                <li key={m.id} className="stub flex items-start gap-4 p-3">
-                  <span className="flex w-16 justify-center">
-                    <DateStamp date={m.met_on} size="sm" />
-                  </span>
-                  <div className="ml-2 min-w-0 flex-1">
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted">{friendlyDate(m.met_on)}</p>
-                    {m.context && <p className="font-medium text-ink">{m.context}</p>}
-                    {m.notes && <p className="mt-1 whitespace-pre-wrap text-sm text-muted">{m.notes}</p>}
-                  </div>
-                  <button type="button" onClick={() => removeMeeting(m.id)} disabled={busy} className="min-h-11 shrink-0 px-2 text-xs text-muted underline underline-offset-4">
-                    {DETAIL_COPY.deleteMeeting}
-                  </button>
-                </li>
-              ))}
+              {c.meetings.map((m) =>
+                editingMeeting === m.id ? (
+                  <li key={m.id} className="stub p-3">
+                    <form onSubmit={saveMeeting} className="flex flex-col gap-4">
+                      <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+                        <Field label={FORM_COPY.metOn} value={mDraft.met_on} onChange={(v) => setMDraft((d) => ({ ...d, met_on: v }))} type="date" required />
+                        <Field label={FORM_COPY.context} value={mDraft.context} onChange={(v) => setMDraft((d) => ({ ...d, context: v }))} placeholder={FORM_COPY.contextPlaceholder} maxLength={200} />
+                      </div>
+                      <Field label={FORM_COPY.notes} value={mDraft.notes} onChange={(v) => setMDraft((d) => ({ ...d, notes: v }))} placeholder={FORM_COPY.notesPlaceholder} multiline maxLength={4000} />
+                      <div className="flex flex-wrap gap-3">
+                        <button type="submit" disabled={busy || !mDraft.met_on} className="min-h-12 rounded-xl bg-canal px-6 font-semibold text-canal-ink disabled:opacity-60">
+                          {busy ? FORM_COPY.saving : DETAIL_COPY.saveMeeting}
+                        </button>
+                        <button type="button" onClick={() => setEditingMeeting(null)} className="min-h-11 px-2 text-sm text-muted underline underline-offset-4">
+                          {DETAIL_COPY.cancelEdit}
+                        </button>
+                      </div>
+                    </form>
+                  </li>
+                ) : (
+                  <li key={m.id} className="stub flex items-start gap-4 p-3">
+                    <span className="flex w-16 justify-center">
+                      <DateStamp date={m.met_on} size="sm" />
+                    </span>
+                    <div className="ml-2 min-w-0 flex-1">
+                      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted">{friendlyDate(m.met_on)}</p>
+                      {m.context && <p className="font-medium text-ink">{m.context}</p>}
+                      {m.notes && <p className="mt-1 whitespace-pre-wrap text-sm text-muted">{m.notes}</p>}
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end">
+                      <button type="button" onClick={() => startEditMeeting(m)} disabled={busy} className="min-h-11 px-2 text-xs text-canal underline underline-offset-4">
+                        {DETAIL_COPY.editMeeting}
+                      </button>
+                      <button type="button" onClick={() => removeMeeting(m.id)} disabled={busy} className="min-h-11 px-2 text-xs text-muted underline underline-offset-4">
+                        {DETAIL_COPY.deleteMeeting}
+                      </button>
+                    </div>
+                  </li>
+                ),
+              )}
             </ul>
           )}
         </section>
