@@ -132,6 +132,11 @@ export async function addMeeting(input: { contact_id: string; met_on: string; co
   return row;
 }
 
+export async function updateMeeting(id: string, input: { met_on: string; context: string | null; notes: string | null }): Promise<Meeting | null> {
+  const rows = await rest<Meeting[]>("PATCH", `wdimt_meetings?id=eq.${encodeURIComponent(id)}`, input, "return=representation");
+  return rows[0] ?? null;
+}
+
 export async function deleteMeeting(id: string): Promise<boolean> {
   const rows = await rest<Meeting[]>("DELETE", `wdimt_meetings?id=eq.${encodeURIComponent(id)}`, undefined, "return=representation");
   return rows.length > 0;
