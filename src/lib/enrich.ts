@@ -6,7 +6,7 @@ import { logger, errorMessage } from "./logger";
 import { ENRICH_COPY } from "./constants";
 import type { EnrichResult } from "./types";
 
-async function readPreview(url: string) {
+export async function readPreview(url: string) {
   try {
     const r = await safeFetch(url, { maxBytes: 1_000_000, timeoutMs: 7000, accept: "text/html,application/xhtml+xml" });
     if (!r || !/html/i.test(r.contentType)) return null;

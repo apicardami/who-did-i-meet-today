@@ -105,6 +105,22 @@ export const PEOPLE_COPY = {
   never: "No meetings logged",
 };
 
+export const PHOTO_COPY = {
+  fromProfile: "Get photo from profile",
+  fetching: "Looking…",
+  saved: "Photo saved from the profile.",
+  noImage: "That profile didn't share a photo. Try a screenshot instead.",
+  noLink: "Add a LinkedIn or Instagram link first.",
+  replaceConfirm: "This person already has a photo. Replace it?",
+  fromScreenshot: "From a screenshot",
+  pasteHint: "Or paste a screenshot (Ctrl/Cmd+V).",
+  finding: "Finding the face…",
+  noFace: "Couldn't find a face in that screenshot. Try a closer one, or add a photo instead.",
+  useThis: "Use this",
+  tryAnother: "Try another",
+  previewAlt: "Cropped photo preview",
+};
+
 export const DETAIL_COPY = {
   back: "All people",
   history: "When you met",

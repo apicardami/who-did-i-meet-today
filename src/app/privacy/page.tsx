@@ -57,11 +57,21 @@ export default function PrivacyPage() {
           ),
         },
         {
+          heading: "Photo from a screenshot",
+          body: (
+            <p>
+              If you add a photo from a screenshot, your browser first tries to find the face itself. If it can&apos;t, the screenshot (downsized) is sent
+              once to Anthropic&apos;s Claude API only to locate the profile photo, and the result is a crop box. The screenshot is not saved by the app;
+              only the cropped photo you confirm is stored.
+            </p>
+          ),
+        },
+        {
           heading: "How your information is used",
           body: (
             <p>
               Your data is used solely to provide {APP_NAME}&apos;s functionality to you. The only AI provider used is Anthropic (Claude), and only for
-              name search as described above.
+              name search and screenshot photo location as described above.
             </p>
           ),
         },
@@ -69,7 +79,7 @@ export default function PrivacyPage() {
           heading: "Third parties we share data with",
           body: (
             <p>
-              Vercel (hosting), Supabase (database) and Anthropic (name search). These are infrastructure subprocessors — they process data on our behalf to run the app, not on
+              Vercel (hosting), Supabase (database) and Anthropic (name search and screenshot photo location). These are infrastructure subprocessors — they process data on our behalf to run the app, not on
               their own account. We do not sell, rent, or license your data to any party. We do not use your data for advertising, marketing, or profiling.
               We do not use your data to train any machine learning model.
             </p>

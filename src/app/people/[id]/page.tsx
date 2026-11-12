@@ -11,7 +11,7 @@ import Field from "@/components/Field";
 import PhotoPicker from "@/components/PhotoPicker";
 import { Empty, ErrorState, Loading } from "@/components/States";
 import { useJson } from "@/components/useJson";
-import { DETAIL_COPY, FORM_COPY, HOME_COPY } from "@/lib/constants";
+import { DETAIL_COPY, FORM_COPY, HOME_COPY, PHOTO_COPY } from "@/lib/constants";
 import { friendlyDate, localIsoDate } from "@/lib/dates";
 import { instagramLink, safeHref, whatsappLink } from "@/lib/links";
 import type { ContactDetail } from "@/lib/types";
@@ -49,6 +49,8 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
   const [meetNotes, setMeetNotes] = useState("");
   const [editingMeeting, setEditingMeeting] = useState<string | null>(null);
   const [mDraft, setMDraft] = useState({ met_on: "", context: "", notes: "" });
+  const [photoMsg, setPhotoMsg] = useState<string | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
 
   const call = async (fn: () => Promise<Response>, after: () => void) => {
     setBusy(true);
@@ -94,6 +96,34 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
     setEditing(true);
   };
 
+  const fetchPhoto = async (replace: boolean): Promise<void> => {
+    setPhotoBusy(true);
+    setPhotoMsg(null);
+    try {
+      const res = await fetch(`/api/contacts/${c.id}/photo/fetch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ replace }),
+      });
+      if (res.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      if (!res.ok) throw new Error(String(res.status));
+      const { status } = (await res.json()) as { status: "saved" | "exists" | "no_image" | "no_link" };
+      if (status === "exists") {
+        if (window.confirm(PHOTO_COPY.replaceConfirm)) await fetchPhoto(true);
+        return;
+      }
+      setPhotoMsg(status === "saved" ? PHOTO_COPY.saved : status === "no_link" ? PHOTO_COPY.noLink : PHOTO_COPY.noImage);
+      if (status === "saved") reload();
+    } catch {
+      setPhotoMsg(DETAIL_COPY.error);
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
   const saveEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!draft) return;
@@ -106,6 +136,10 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
         }),
       () => {
         setEditing(false);
+        const linkAdded =
+          (draft.linkedin_url.trim() !== (c.linkedin_url ?? "") && draft.linkedin_url.trim() !== "") ||
+          (draft.instagram_handle.trim().replace(/^@/, "").toLowerCase() !== (c.instagram_handle ?? "") && draft.instagram_handle.trim() !== "");
+        if (linkAdded && !c.has_photo && photo === null) void fetchPhoto(false);
         reload();
       },
     );
@@ -252,6 +286,18 @@ export default function PersonPage({ params }: { params: Promise<{ id: string }>
                 {DETAIL_COPY.delete}
               </button>
             </div>
+            {(li || c.instagram_handle) && (
+              <div className="flex flex-col items-start gap-1">
+                <button type="button" onClick={() => void fetchPhoto(false)} disabled={photoBusy} className={pill}>
+                  {photoBusy ? PHOTO_COPY.fetching : PHOTO_COPY.fromProfile}
+                </button>
+                {photoMsg && (
+                  <p role="status" className="text-sm text-muted">
+                    {photoMsg}
+                  </p>
+                )}
+              </div>
+            )}
             {error && (
               <p role="alert" className="text-sm text-danger">
                 {error}
