@@ -13,7 +13,7 @@ Built by Beto Forge (RUN-20261110-001).
   (see `supabase/migrations/001_init.sql`). The publishable key alone can read nothing.
 - iron-session shared-password login (`APP_PASSWORD`), enforced in `src/proxy.ts` and again in
   every data route.
-- Photos are resized on-device to ≤480px JPEG and stored in `contact_photos` (deleted with the person).
+- Photos can come from an upload, a screenshot (face found and cropped), or one attempt at the contact's public link preview (LinkedIn blocks most person pages). They are resized on-device to ≤480px JPEG and stored in `contact_photos` (deleted with the person).
 
 ## Name search
 `/api/search-profiles` uses Claude's server-side web search (`web_search_20260209`, `allowed_domains: linkedin.com, instagram.com`) to find profile candidates for a full name, then the picked profile goes through the normal enrichment. Env: `ANTHROPIC_API_KEY` (required for search), `ANTHROPIC_MODEL` (default `claude-opus-5-5`), `SEARCH_REGION_HINT` (default `Panama`), `SEARCH_NETWORK_HINT` (default `Luis Picardami, Alberto Picardami`; results tied to these names rank first).
@@ -22,7 +22,7 @@ Built by Beto Forge (RUN-20261110-001).
 `/api/enrich` fetches the pasted page once (SSRF-guarded: public IPs only, 3 redirects max, 1MB cap,
 7s timeout) and reads its Open Graph tags. LinkedIn and Instagram usually refuse anonymous
 requests, so for those the app falls back to what's in the link itself (name from the LinkedIn slug,
-the Instagram handle) plus manual entry and a photo. No scraping behind logins. The only AI is the name search above.
+the Instagram handle) plus manual entry and a photo. No scraping behind logins. The only AI is the name search above and, for screenshots without a browser face detector, locating the face in the screenshot.
 
 ## Env
 See `.env.example`. Required: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `APP_DB_KEY`,
