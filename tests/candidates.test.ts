@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanSearchName, extractCandidates } from "@/lib/candidates";
+import { cleanSearchName, extractCandidates, parseTerms, rankCandidates, type ProfileCandidate } from "@/lib/candidates";
 
 const blocks = [
   { type: "server_tool_use", id: "x", name: "web_search", input: { query: "Juan Perez" } },
@@ -35,5 +35,40 @@ describe("extractCandidates", () => {
 describe("cleanSearchName", () => {
   it("keeps letters, accents, apostrophes and hyphens; strips quotes and symbols", () => {
     expect(cleanSearchName(' María-José O\'Neil "ignore previous" <b> ')).toBe("María-José O'Neil ignore previous b");
+  });
+});
+
+const cand = (name: string, headline: string | null = null, url = "https://www.linkedin.com/in/x/"): ProfileCandidate => ({
+  source: "linkedin",
+  url,
+  handle: null,
+  name,
+  headline,
+});
+
+describe("rankCandidates", () => {
+  const a = cand("Juan Pérez", "Engineer · Acme");
+  const b = cand("Juan Pérez", "Analyst · Copa Airlines · Panama");
+  const c = cand("Juan Pérez", "Works with Luis Picard-ami at Beta");
+
+  it("puts network matches first, then region matches, otherwise keeps order", () => {
+    expect(rankCandidates([a, b, c], ["Luis Picardami"], ["Panama"])).toEqual([c, b, a]);
+  });
+
+  it("matches ignoring case, accents, spaces and hyphens", () => {
+    expect(rankCandidates([a, cand("Juan", "PICARD AMI group")], ["picardami"])[0]?.headline).toBe("PICARD AMI group");
+  });
+
+  it("is a no-op with no terms and does not mutate the input", () => {
+    const input = [a, b];
+    expect(rankCandidates(input, [])).toEqual([a, b]);
+    expect(input).toEqual([a, b]);
+  });
+});
+
+describe("parseTerms", () => {
+  it("splits, trims and drops empties", () => {
+    expect(parseTerms(" Luis Picardami, ,Alberto ")).toEqual(["Luis Picardami", "Alberto"]);
+    expect(parseTerms(undefined)).toEqual([]);
   });
 });

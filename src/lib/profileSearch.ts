@@ -1,11 +1,12 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { extractCandidates, type ProfileCandidate } from "./candidates";
+import { extractCandidates, parseTerms, rankCandidates, type ProfileCandidate } from "./candidates";
 import { logger, errorMessage } from "./logger";
 
 export class SearchNotConfiguredError extends Error {}
 
 const DEFAULT_MODEL = "claude-opus-5-5";
+const DEFAULT_NETWORK = "Luis Picardami, Alberto Picardami";
 
 /**
  * Uses Claude's server-side web search, restricted to linkedin.com and instagram.com, to find
@@ -19,11 +20,15 @@ export async function searchProfiles(name: string, hint: string | null): Promise
   const client = new Anthropic({ apiKey, timeout: 45_000, maxRetries: 1 });
   const model = process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
   const regionHint = process.env.SEARCH_REGION_HINT ?? "Panama";
+  const network = parseTerms(process.env.SEARCH_NETWORK_HINT ?? DEFAULT_NETWORK);
 
   const prompt = [
     `Find the LinkedIn profile and the Instagram account of the person named "${name}".`,
     hint ? `Extra detail from the user: ${hint}.` : "",
     regionHint ? `They may be connected to ${regionHint}; prefer those matches but include other close matches too.` : "",
+    network.length
+      ? `Prefer people connected to ${network.join(" or ")} (also spelled Picard-ami): same employer, mutual connections, family or mentions of them in the profile; include other close matches after those.`
+      : "",
     "Search LinkedIn and Instagram separately. Then reply with one short sentence; the search results are what matters.",
   ]
     .filter(Boolean)
@@ -60,7 +65,7 @@ export async function searchProfiles(name: string, hint: string | null): Promise
   }
 
   try {
-    return extractCandidates(blocks);
+    return rankCandidates(extractCandidates(blocks), network, parseTerms(regionHint));
   } catch (err) {
     logger.error("candidate extraction failed", { error: errorMessage(err) });
     return [];
