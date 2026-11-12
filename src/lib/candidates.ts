@@ -64,3 +64,40 @@ export function cleanSearchName(raw: string): string {
     .trim()
     .slice(0, 100);
 }
+
+const squash = (v: string): string =>
+  v
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+/**
+ * Pure: stable re-rank so candidates tied to the user's own circle come first. `network` terms (e.g. a surname
+ * or "Luis Picardami") weigh more than `region` terms (e.g. "Panama"). Matching ignores case, accents, spaces
+ * and hyphens, so "Picard-ami" and "picardami" are the same. Candidates with no match keep their order.
+ */
+export function rankCandidates(
+  candidates: readonly ProfileCandidate[],
+  network: readonly string[],
+  region: readonly string[] = [],
+): ProfileCandidate[] {
+  const net = network.map(squash).filter((t) => t.length >= 3);
+  const reg = region.map(squash).filter((t) => t.length >= 3);
+  const score = (c: ProfileCandidate): number => {
+    const hay = squash([c.name, c.headline, c.handle, c.url].filter(Boolean).join(" "));
+    return net.filter((t) => hay.includes(t)).length * 3 + reg.filter((t) => hay.includes(t)).length;
+  };
+  return candidates
+    .map((c, i) => ({ c, i, s: score(c) }))
+    .sort((a, b) => b.s - a.s || a.i - b.i)
+    .map((x) => x.c);
+}
+
+/** Splits a comma-separated env/config list into trimmed, non-empty terms. */
+export function parseTerms(raw: string | undefined | null): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
